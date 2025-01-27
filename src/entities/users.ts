@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("users")
 export class Users {
@@ -52,10 +52,10 @@ export class Users {
   roll_id: number;
   @Column()
   remember_token: string;
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-  created_at: Date;
-  @Column({ type: "datetime", nullable: true })
-  updated_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
   @Column({ default: 1 })
   active_status: number;
   @Column({ default: 0 })
