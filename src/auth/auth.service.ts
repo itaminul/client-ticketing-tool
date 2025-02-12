@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "../entities/users";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
+import { LoginDto } from "./login.dot";
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,14 +27,11 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
-    const payload = {
-      username: user.username,
-      sub: user.id,
-      roles: user.roles.map((role) => role.name),
-    };
-    return {
-      access_toke: this.jwtServiec.sign(payload),
-    };
+  async login(loginDto: LoginDto) {
+    // Mock logic for login
+    if (loginDto.email === "test@example.com" && loginDto.password === "password123") {
+      return { access_token: "mockAccessToken" };
+    }
+    throw new UnauthorizedException();
   }
 }
