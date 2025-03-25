@@ -78,4 +78,16 @@ export class AuthService {
     }
     throw new UnauthorizedException();
   }
+
+  async getAll(page: number = 1, limit: number = 10) {
+    const [result, total] = await this.userRepository.findAndCount({
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return {
+      result: result,
+      total,
+    };
+  }
 }
