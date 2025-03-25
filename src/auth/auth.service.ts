@@ -32,10 +32,9 @@ export class AuthService {
     return null;
   }
 
+  
   async register(registerDto: RegisterDto) {
     try {
-      console.log("registerDto", registerDto);
-      // Check if user already exists
       const existingUser = await this.userRepository.findOne({
         where: {
           username: registerDto.username,
@@ -48,17 +47,18 @@ export class AuthService {
       // Hash password
       const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-      const resume = this.userRepository.create({
+      const userData = this.userRepository.create({
         ...registerDto,
         password: hashedPassword,
       });
       // Save the Resume userRepository
-      const savedResume = await this.userRepository.save(resume);
-      return savedResume;
+      const savedUserData = await this.userRepository.save(userData);
+      return savedUserData;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
+
 
   async login(loginDto: LoginDto) {
     // Mock logic for login
