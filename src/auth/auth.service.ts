@@ -18,10 +18,10 @@ export class AuthService {
     private jwtServiec: JwtService
   ) {}
 
-  async validateUser(username: string, pass: string) {
+  async validateUser(email: string, pass: string) {
     const user = await this.userRepository.findOne({
       where: {
-        name: username,
+        email: email,
       },
       relations: ["roles"],
     });
@@ -34,8 +34,9 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     try {
+      console.log("registerDto", registerDto);
       // Check if user already exists
-      const existingUser = await this.userRepository.find({
+      const existingUser = await this.userRepository.findOne({
         where: {
           email: registerDto.email,
         },

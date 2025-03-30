@@ -2,6 +2,7 @@ import { Users } from "src/entities/users";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { Roles } from "./entities/role";
 
+
 export const AppDataSource: DataSourceOptions = {
   type: "postgres",
   host: "localhost",
