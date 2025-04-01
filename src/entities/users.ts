@@ -36,7 +36,7 @@ export class Users {
   userlevel_id: number;
   @Column()
   roll_id: number;
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
   createdAt: Date;
   @UpdateDateColumn()
   updatedAt: Date;
