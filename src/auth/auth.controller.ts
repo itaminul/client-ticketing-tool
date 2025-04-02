@@ -7,13 +7,13 @@ import { RegisterDto } from "./dto/register.dto";
 export class AuthController {
   constructor(public readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post("register")
   async register(@Body() registerDto: RegisterDto) {
     try {
       const results = await this.authService.register(registerDto);
       return results;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
   async login(loginDto: LoginDto) {
