@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -32,7 +34,6 @@ export class AuthService {
     return null;
   }
 
-  
   async register(registerDto: RegisterDto) {
     try {
       const existingUser = await this.userRepository.findOne({
@@ -55,10 +56,17 @@ export class AuthService {
       const savedUserData = await this.userRepository.save(userData);
       return savedUserData;
     } catch (error) {
-      throw error;
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+          code: error.code,
+          detail: error.default,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
-
 
   async login(loginDto: LoginDto) {
     // Mock logic for login
