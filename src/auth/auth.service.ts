@@ -25,7 +25,7 @@ export class AuthService {
       where: {
         username: username,
       },
-      relations: ["roles"],
+    //  relations: ["roles"],
     });
     if (user && bcrypt.compareSync(pass, user.password)) {
       const { password, ...result } = user;
@@ -69,14 +69,26 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    // Mock logic for login
-    if (
-      loginDto.email === "test@example.com" &&
-      loginDto.password === "password123"
-    ) {
-      return { access_token: "mockAccessToken" };
+    try {
+      const user = await this.validateUser(
+        loginDto.username,
+        loginDto.password
+      );
+      console.log("user", user);
+      const payload = { username: user.username };
+      const access_token = this.jwtServiec.sign(payload);
+      console.log("access toke", access_token);
+      return {
+        access_token,
+        username: user.username,
+      };
+    } catch (error) {
+      throw new UnauthorizedException({
+        statusCode: 401,
+        message: "Login failed: Invalid credentials",
+        error: "Unauthorized",
+      });
     }
-    throw new UnauthorizedException();
   }
 
   async getAll(page: number = 1, limit: number = 10) {

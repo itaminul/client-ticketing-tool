@@ -33,6 +33,8 @@ export class AuthController {
       throw error;
     }
   }
+
+  @Post('login')
   async login(loginDto: LoginDto) {
     try {
       const results = await this.authService.login(loginDto);
