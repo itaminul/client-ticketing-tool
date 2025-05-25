@@ -9,6 +9,7 @@ async function bootstrap() {
   app.useGlobalFilters(new ExceptionFilters());
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ResponseInterceptor())
+  app.setGlobalPrefix('api')
   await app.listen(3000);
 }
 bootstrap();

@@ -34,7 +34,7 @@ export class AuthController {
     }
   }
 
-  @Post('login')
+  @Post("login")
   async login(loginDto: LoginDto) {
     try {
       const results = await this.authService.login(loginDto);
@@ -54,7 +54,7 @@ export class AuthController {
       return {
         status: HttpStatus.OK,
         message: "Request successful",
-        data: data, // Returning registered user data
+        data: data.result,
         error: null,
         pagination: {
           totalItems: data.total,
