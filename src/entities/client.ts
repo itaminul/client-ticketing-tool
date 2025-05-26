@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Projects } from "./projects";
+import { GenerateTicket } from "./generate-tickets";
 
 @Entity("client")
 export class Client {
@@ -35,4 +36,7 @@ export class Client {
 
   @OneToMany(() => Projects, (project) => project.client)
   projects: Projects[];
+
+  @OneToMany(() => GenerateTicket, (generateTicket) => generateTicket.clients)
+  generateTicket: GenerateTicket;
 }

@@ -15,6 +15,10 @@ export class TicketAttachments {
   @Column()
   attachementTitile: string;
   @Column()
+  attachementTtype: string;
+  @Column()
+  attachementPath: string;
+  @Column({ nullable: true })
   attachementDscripton: string;
   @CreateDateColumn()
   createdAt: Date;

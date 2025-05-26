@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { Client } from "./client";
 import { TicketAttachments } from "./tickets-attachements";
+import { Projects } from "./projects";
 
 @Entity("generateTicket")
 export class GenerateTicket {
@@ -16,17 +17,17 @@ export class GenerateTicket {
   id: number;
   @Column()
   titile: string;
-  @Column()
+  @Column({ nullable: true })
   descripton: string;
   @Column()
   ticketStartDate: Date;
-  @Column()
+  @Column({ nullable: true })
   ticketEndDate: Date;
   @Column({ default: 0 })
   ticketStatus: number;
-  @Column()
+  @Column({ nullable: true })
   ticketFeedback: string;
-  @Column()
+  @Column({ nullable: true })
   remarks: string;
   @Column({ default: 1 })
   org_id: number;
@@ -40,18 +41,19 @@ export class GenerateTicket {
   @ManyToOne(() => Client, (clint) => clint.projects)
   client: Client;
 
-  @Column()
-  protected: number;
-  @Column()
-  clientId: number;
+  @ManyToOne(() => Projects, (pro) => pro.generateTicket)
+  project: Projects[];
 
-  @Column()
+  @ManyToOne(() => Client, (pro) => pro.generateTicket)
+  clients: Client[];
+
+  @Column({ nullable: true })
   ticketTypeId: number;
 
-  @Column()
+  @Column({ nullable: true })
   ticketAssigned: number;
 
-  @Column()
+  @Column({ nullable: true })
   ticketAssignedTo: number;
 
   @OneToMany(() => TicketAttachments, (tiAttach) => tiAttach.generateTicket)

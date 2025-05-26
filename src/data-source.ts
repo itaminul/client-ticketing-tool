@@ -3,6 +3,8 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import { Roles } from "./entities/role";
 import { Client } from "./entities/client";
 import { Projects } from "./entities/projects";
+import { GenerateTicket } from "./entities/generate-tickets";
+import { TicketAttachments } from "./entities/tickets-attachements";
 
 export const AppDataSource: DataSourceOptions = {
   type: "postgres",
@@ -11,7 +13,7 @@ export const AppDataSource: DataSourceOptions = {
   username: "erpdb",
   password: "123456",
   database: "sup_ticketing_tool",
-  entities: [Users, Roles, Client, Projects],
+  entities: [Users, Roles, Client, Projects, GenerateTicket, TicketAttachments],
   migrations: ["./dist/migrations/*.js"],
   synchronize: false,
   logging: true,
