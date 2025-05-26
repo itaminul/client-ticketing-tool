@@ -22,20 +22,6 @@ export class ClientsController {
   ) {
     try {
       const data = await this.clientService.getAll(page, limit);
-      if (!data || data.result.length === 0) {
-        return {
-          status: HttpStatus.NOT_FOUND,
-          message: "Data not found",
-          data: data.result,
-          error: null,
-          pagination: {
-            totalItems: data.total,
-            totalPages: Math.ceil(data.total / limit),
-            currentPage: page,
-            itemsPerPage: limit,
-          },
-        };
-      } else {
         return {
           status: HttpStatus.OK,
           data: data.result,
@@ -47,7 +33,7 @@ export class ClientsController {
             itemsPerPage: limit,
           },
         };
-      }
+      
     } catch (error) {
       throw error;
     }

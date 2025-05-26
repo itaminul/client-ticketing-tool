@@ -7,7 +7,7 @@ import {
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { HttpStatus } from "@nestjs/common";
-import { QueryFailedError } from "typeorm"; 
+import { QueryFailedError } from "typeorm";
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
@@ -17,6 +17,23 @@ export class ResponseInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data) => {
+        if (
+          method === "GET" &&
+          (data?.data === null ||
+            data?.data === undefined ||
+            (Array.isArray(data?.data) && data.data.length === 0))
+        ) {
+          return {
+            status: HttpStatus.NOT_FOUND,
+            message: "No data found",
+            data: null,
+            metadata: {
+              request_time: new Date().toISOString(),
+              api_version: "v1",
+            },
+          };
+        }
+
         if (data && data.status) {
           const response: any = {
             status: HttpStatus.OK,
