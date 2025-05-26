@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpStatus, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from "@nestjs/common";
 import { ClientsService } from "./clients.service";
 import { CreateClientsDto } from "./dto/create.clients.dto";
 
@@ -29,7 +38,6 @@ export class ClientsController {
       } else {
         return {
           status: HttpStatus.OK,
-          message: "Request successful",
           data: data.result,
           error: null,
           pagination: {
@@ -48,7 +56,24 @@ export class ClientsController {
   @Post()
   async create(@Body() clientDto: CreateClientsDto) {
     try {
-      return await this.clientService.create(clientDto);
+      const data = await this.clientService.create(clientDto);
+      return {
+        status: HttpStatus.NOT_FOUND,
+        data: data,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Patch(":id")
+  async update(@Param("id") id: any, @Body() clientDto: CreateClientsDto) {
+    try {
+      const data = await this.clientService.update(id, clientDto);
+      return {
+        status: HttpStatus.OK,
+        data: data
+      };
     } catch (error) {
       throw error;
     }

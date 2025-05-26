@@ -8,8 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new ExceptionFilters());
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalInterceptors(new ResponseInterceptor())
-  app.setGlobalPrefix('api')
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.setGlobalPrefix("api");
   await app.listen(3000);
 }
 bootstrap();
