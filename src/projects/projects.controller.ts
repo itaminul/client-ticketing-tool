@@ -1,5 +1,6 @@
-import { Controller, Get, HttpStatus, Query } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Post, Query } from "@nestjs/common";
 import { ProjectsService } from "./projects.service";
+import { CreateProjectsDto } from "./dto/projects.dto";
 
 @Controller("projects")
 export class ProjectsController {
@@ -12,22 +13,32 @@ export class ProjectsController {
   ) {
     try {
       const data = await this.projectService.getAll(page, limit);
-        return {
-          status: HttpStatus.OK,
-          data: data.result,
-          error: null,
-          pagination: {
-            totalItems: data.total,
-            totalPages: Math.ceil(data.total / limit),
-            currentPage: page,
-            itemsPerPage: limit,
-          },
-        };
-      
+      return {
+        status: HttpStatus.OK,
+        data: data.result,
+        error: null,
+        pagination: {
+          totalItems: data.total,
+          totalPages: Math.ceil(data.total / limit),
+          currentPage: page,
+          itemsPerPage: limit,
+        },
+      };
     } catch (error) {
       throw error;
     }
   }
 
-  
+  @Post()
+  async create(@Body() projectDto: CreateProjectsDto) {
+    try {
+      const data = await this.projectService.create(projectDto);
+      return {
+        status: HttpStatus.OK,
+        data: data,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

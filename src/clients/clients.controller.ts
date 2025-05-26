@@ -44,7 +44,7 @@ export class ClientsController {
     try {
       const data = await this.clientService.create(clientDto);
       return {
-        status: HttpStatus.NOT_FOUND,
+        status: HttpStatus.OK,
         data: data,
       };
     } catch (error) {
