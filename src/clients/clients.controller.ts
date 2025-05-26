@@ -9,7 +9,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { ClientsService } from "./clients.service";
-import { CreateClientsDto } from "./dto/create.clients.dto";
+import { CreateClientsDto, UpdateClientsDto } from "./dto/clients.dto";
 
 @Controller("clients")
 export class ClientsController {
@@ -67,7 +67,7 @@ export class ClientsController {
   }
 
   @Patch(":id")
-  async update(@Param("id") id: any, @Body() clientDto: CreateClientsDto) {
+  async update(@Param("id") id: any, @Body() clientDto: UpdateClientsDto) {
     try {
       const data = await this.clientService.update(id, clientDto);
       return {

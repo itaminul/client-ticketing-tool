@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Client } from "src/entities/client";
 import { Repository } from "typeorm";
-import { CreateClientsDto } from "./dto/create.clients.dto";
+import { CreateClientsDto, UpdateClientsDto } from "./dto/clients.dto";
 
 @Injectable()
 export class ClientsService {
@@ -48,7 +48,7 @@ export class ClientsService {
     }
   }
 
-  async update(id: any, clientDto: CreateClientsDto) {
+  async update(id: any, clientDto: UpdateClientsDto) {
     try {
       const existingClient = await this.clientsRepository.findOne({
         where: { id },
