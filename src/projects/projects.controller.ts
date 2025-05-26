@@ -1,6 +1,15 @@
-import { Body, Controller, Get, HttpStatus, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from "@nestjs/common";
 import { ProjectsService } from "./projects.service";
-import { CreateProjectsDto } from "./dto/projects.dto";
+import { CreateProjectsDto, UpdateProjectsDto } from "./dto/projects.dto";
 
 @Controller("projects")
 export class ProjectsController {
@@ -33,6 +42,19 @@ export class ProjectsController {
   async create(@Body() projectDto: CreateProjectsDto) {
     try {
       const data = await this.projectService.create(projectDto);
+      return {
+        status: HttpStatus.OK,
+        data: data,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Patch(":id")
+  async update(@Param("id") id: bigint, @Body() projectDto: UpdateProjectsDto) {
+    try {
+      const data = await this.projectService.update(id, projectDto);
       return {
         status: HttpStatus.OK,
         data: data,
