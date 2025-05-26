@@ -33,6 +33,6 @@ export class Client {
   @Column({ default: 1 })
   active_status: number;
 
-  @OneToMany(() => Projects, (project) => project.clients)
-  projects: Projects;
+  @OneToMany(() => Projects, (project) => project.client)
+  projects: Projects[];
 }
