@@ -22,8 +22,12 @@ export class TicketAttachments {
   attachementDscripton: string;
   @CreateDateColumn()
   createdAt: Date;
+  @Column({ nullable: true })
+  createdBy: number;
   @UpdateDateColumn()
   updatedAt: Date;
+  @Column({ nullable: true })
+  updatedBy: number;
 
   @ManyToOne(() => GenerateTicket, (geTicket) => geTicket.tiAttachments)
   generateTicket: GenerateTicket;
