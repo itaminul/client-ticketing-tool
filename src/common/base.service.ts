@@ -1,9 +1,38 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { Repository, FindManyOptions, FindOptionsWhere, DeepPartial } from 'typeorm';
+import { HttpStatus, Injectable } from "@nestjs/common";
+import {
+  Repository,
+  FindManyOptions,
+  FindOptionsWhere,
+  DeepPartial,
+  EntityManager,
+  DataSource,
+} from "typeorm";
 
 @Injectable()
 export abstract class BaseService<T> {
-  constructor(protected readonly repository: Repository<T>) {}
+  constructor(
+    protected readonly repository: Repository<T>,
+    protected readonly dataSource: DataSource
+  ) {}
+
+  async runInTransaction<T>(
+    callback: (manager: EntityManager) => Promise<T>
+  ): Promise<T> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const result = await callback(queryRunner.manager);
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
 
   async getAll(
     page: number = 1,
@@ -32,18 +61,18 @@ export abstract class BaseService<T> {
   }
 
   async update(
-    id: any, 
+    id: any,
     partialEntity: DeepPartial<T>,
     options?: { where?: FindOptionsWhere<T> }
   ): Promise<{ status: HttpStatus; message: string } | T> {
     try {
-      const where = options?.where || { id } as FindOptionsWhere<T>;
+      const where = options?.where || ({ id } as FindOptionsWhere<T>);
       const existing = await this.repository.findOne({ where });
 
       if (!existing) {
         return {
           status: HttpStatus.NOT_FOUND,
-          message: 'Data not found',
+          message: "Data not found",
         };
       }
 
@@ -60,12 +89,12 @@ export abstract class BaseService<T> {
       if (result.affected === 0) {
         return {
           status: HttpStatus.NOT_FOUND,
-          message: 'Data not found',
+          message: "Data not found",
         };
       }
       return {
         status: HttpStatus.OK,
-        message: 'Data deleted successfully',
+        message: "Data deleted successfully",
       };
     } catch (error) {
       throw error;

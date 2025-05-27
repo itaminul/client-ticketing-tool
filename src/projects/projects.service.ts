@@ -2,7 +2,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Projects } from "../entities/projects";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { CreateProjectsDto, UpdateProjectsDto } from "./dto/projects.dto";
 import { BaseService } from "../common/base.service";
 
@@ -10,12 +10,13 @@ import { BaseService } from "../common/base.service";
 export class ProjectsService extends BaseService<Projects> {
   constructor(
     @InjectRepository(Projects)
-    private readonly projectRepository: Repository<Projects>
+    private readonly projectRepository: Repository<Projects>,
+    protected readonly dataSource: DataSource
   ) {
-    super(projectRepository);
+    super(projectRepository, dataSource);
   }
 
-  async getAllWithRelations(page: number = 1, limit: number = 10) {
+  async getAll(page: number = 1, limit: number = 10) {
     return super.getAll(page, limit, {
       order: { id: "DESC" },
       relations: { client: true },
@@ -33,11 +34,22 @@ export class ProjectsService extends BaseService<Projects> {
     });
   }
 
-  async createProject(projectsDto: CreateProjectsDto) {
-    return super.create(projectsDto);
+  async create(projectsDto: CreateProjectsDto) {
+    try {
+      return this.runInTransaction(async (manager) => {
+        const project = this.repository.create(projectsDto);
+        return manager.save(project);
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateProject(id: bigint, projectDto: UpdateProjectsDto) {
-    return super.update(id, projectDto);
+    try {
+      return super.update(id, projectDto);
+    } catch (error) {
+      throw error;
+    }
   }
 }
