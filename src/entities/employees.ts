@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -52,6 +53,6 @@ export class Employees {
   updatedBy: number;
   @Column({ default: 1 })
   active_status: number;
-  @ManyToOne(() => GenerateTicket, (genTi) => genTi.employees)
-  generateTicket: GenerateTicket;
+  @OneToMany(() => GenerateTicket, (genTi) => genTi.employees)
+  generateTicket: GenerateTicket[];
 }

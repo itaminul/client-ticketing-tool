@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -40,8 +41,9 @@ export class Projects {
   active_status: number;
 
   @ManyToOne(() => Client, (clint) => clint.projects)
+  @JoinColumn({ name: 'client_id' })
   client: Client;
 
-  @OneToMany(() => GenerateTicket, (generateTicket) => generateTicket.project)
+  @OneToMany(() => GenerateTicket, (generateTicket) => generateTicket.project)  
   generateTicket: GenerateTicket;
 }

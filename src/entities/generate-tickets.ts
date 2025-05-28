@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -42,11 +43,11 @@ export class GenerateTicket {
   updatedBy: number;
   @Column({ default: 1 })
   active_status: number;
-  @ManyToOne(() => Client, (clint) => clint.projects)
-  client: Client;
   @ManyToOne(() => Projects, (pro) => pro.generateTicket)
+  @JoinColumn({ name: "project_id" })
   project: Projects[];
   @ManyToOne(() => Client, (pro) => pro.generateTicket)
+  @JoinColumn({ name: "client_id" })
   clients: Client[];
   @Column({ nullable: true })
   ticketTypeId: number;
@@ -56,6 +57,7 @@ export class GenerateTicket {
   ticketAssignedTo: number;
   @OneToMany(() => TicketAttachments, (tiAttach) => tiAttach.generateTicket)
   tiAttachments: TicketAttachments[];
-  @OneToMany(() => Employees, (emp) => emp.generateTicket)
+  @ManyToOne(() => Employees, (emp) => emp.generateTicket)
+  @JoinColumn({ name: "employeeId" })
   employees: Employees[];
 }

@@ -18,7 +18,12 @@ export class CreateProjectsDto {
   phone: string;
   @IsOptional()
   @IsString()
+  @IsOptional()
+  @IsString()
   emailAddress: string;
+  @IsNotEmpty()
+  @IsNumber()
+  client_id: bigint;
 }
 
 export class UpdateProjectsDto {
@@ -43,4 +48,7 @@ export class UpdateProjectsDto {
   @IsNumber()
   @IsNotEmpty()
   active_status: number;
+  @IsNotEmpty()
+  @IsNumber()
+  client_id: bigint;
 }
