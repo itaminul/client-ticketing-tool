@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Client } from "./client";
 
 @Entity("projects")
 export class Projects {
@@ -30,4 +32,7 @@ export class Projects {
   updatedAt: Date;
   @Column({ default: 1 })
   active_status: number;
+
+  @ManyToMany(() => Client, (clint) => clint.projects)
+  clients: Client;
 }
