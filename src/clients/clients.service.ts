@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Client } from "src/entities/client";
 import { Repository } from "typeorm";
+import { CreateClientsDto } from "./dto/create.clients.dto";
 
 @Injectable()
 export class ClientsService {
@@ -20,6 +21,18 @@ export class ClientsService {
         result: result,
         total,
       };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async create(clientDto: CreateClientsDto) {
+    try {
+      const dataStore = this.clientsRepository.create({
+        ...clientDto,
+      });
+      const result = await this.clientsRepository.save(dataStore);
+      return result;
     } catch (error) {
       throw error;
     }
