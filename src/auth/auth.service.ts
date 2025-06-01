@@ -4,6 +4,8 @@ import {
   UnauthorizedException,
   NotFoundException,
   InternalServerErrorException,
+  Res,
+  HttpStatus,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -13,7 +15,6 @@ import { CreateLoginDto } from "./dto/create-login.dto";
 import { JwtPayload } from "./jwt-payload.interface";
 import { Users } from "src/entities/users";
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,21 +23,49 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
+  async createUser(userDto: CreateLoginDto) {
+    try {
+      const existingUser = await this.userRepository.findOne({
+        where: {
+          username: userDto.username,
+        },
+      });
+
+      if (existingUser) {
+        throw new NotFoundException("User already exists");
+      }
+      const hashPassword = await bcrypt.hash(userDto.password, 10);
+      const data = {
+        username: userDto.username,
+        password: hashPassword,
+      };
+      const userData = this.userRepository.create(data);
+      return await this.userRepository.save(userData);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
+  }
+
   /**
    * Validates user credentials
-   * @param username 
-   * @param password 
+   * @param username
+   * @param password
    * @returns user without password if valid
    * @throws NotAcceptableException if user not found
    * @throws UnauthorizedException if password is invalid
    */
-  async validateUser(username: string, password: string): Promise<{
-    id: number; username: string 
-}> {
+  async validateUser(
+    username: string,
+    password: string
+  ): Promise<{
+    id: number;
+    username: string;
+  }> {
     try {
       const user = await this.userRepository.findOne({
         where: { username },
-        select: ['id', 'username', 'password'] // Explicitly select needed fields
+        select: ["id", "username", "password"], // Explicitly select needed fields
       });
 
       if (!user) {
@@ -44,7 +73,7 @@ export class AuthService {
       }
 
       const passwordValid = await bcrypt.compare(password, user.password);
-      
+
       if (!passwordValid) {
         throw new UnauthorizedException("Invalid credentials");
       }
@@ -53,7 +82,10 @@ export class AuthService {
       const { password: _, ...result } = user;
       return result;
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException("Error validating user");
@@ -62,25 +94,29 @@ export class AuthService {
 
   /**
    * Logs in a user and returns JWT token
-   * @param loginDto 
+   * @param loginDto
    * @returns access token and user info
    * @throws UnauthorizedException if login fails
    */
-  async login(loginDto: CreateLoginDto): Promise<{ access_token: string; username: string }> {
+  async login(
+    loginDto: CreateLoginDto
+  ): Promise<{ access_token: string; username: string }> {
     try {
       // First validate the user
-      const user = await this.validateUser(loginDto.username, loginDto.password);
-      
+      const user = await this.validateUser(
+        loginDto.username,
+        loginDto.password
+      );
       // Then create JWT payload
       const payload: JwtPayload = {
         username: user.username,
         sub: user.id,
-        id: 0
+        id: 0,
       };
 
       // Generate access token
       const access_token = this.jwtService.sign(payload);
-      
+
       return {
         access_token,
         username: user.username,
@@ -96,14 +132,14 @@ export class AuthService {
 
   /**
    * Validates JWT payload
-   * @param payload 
+   * @param payload
    * @returns user if valid
    * @throws UnauthorizedException if invalid
    */
   async validateJwtPayload(payload: JwtPayload): Promise<Users> {
     try {
       const user = await this.userRepository.findOne({
-        where: { username: payload.username }
+        where: { username: payload.username },
       });
 
       if (!user) {

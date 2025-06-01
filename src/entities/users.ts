@@ -30,11 +30,11 @@ export class Users {
   address: string;
   @Column({ default: 1 })
   org_id: number;
-  @Column()
+  @Column({ nullable: true })
   usergrp_id: number;
-  @Column()
+  @Column({ nullable: true, type: "int"})
   userlevel_id: number;
-  @Column()
+  @Column({ default: 1})
   roll_id: number;
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
   createdAt: Date;
@@ -44,9 +44,9 @@ export class Users {
   active_status: number;
   @Column({ nullable: true })
   last_login: string;
-  @Column()
+  @Column({ nullable: true })
   userRoleName: string;
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   createdby: number;
   @Column({ nullable: true })
   updatedby: number;
