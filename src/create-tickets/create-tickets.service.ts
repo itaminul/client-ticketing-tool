@@ -1,7 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "src/common/base.service";
 import { GenerateTicket } from "src/entities/generate-tickets";
+import { CreateProjectsDto } from "src/projects/dto/projects.dto";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -26,4 +27,8 @@ export class CreateTicketsService extends BaseService<GenerateTicket> {
       },
     });
   }
+
+//   async create(projectsDto: CreateProjectsDto) {
+//     return super.create(projectsDto);
+//   }
 }
