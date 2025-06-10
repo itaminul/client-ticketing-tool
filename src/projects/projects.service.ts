@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Projects } from "src/entities/projects";
 import { Repository } from "typeorm";
+import { CreateProjectsDto } from "./dto/projects.dto";
 
 @Injectable()
 export class ProjectsService {
@@ -34,7 +35,16 @@ export class ProjectsService {
     }
   }
 
-  async create() {
-    
+  async create(projectsDto: CreateProjectsDto) {
+    try {
+      const data = this.projectRepository.create({
+        ...projectsDto,
+      });
+
+      const result = await this.projectRepository.save(data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 }
