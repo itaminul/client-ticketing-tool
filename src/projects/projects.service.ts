@@ -19,11 +19,19 @@ export class ProjectsService {
         order: {
           id: "DESC",
         },
+        relations: {
+          client: true,
+        },
         select: {
           id: true,
           projectName: true,
           projectDescripton: true,
           phone: true,
+          client: {
+            clientName: true,
+            clientDescripton: true,
+            contactNo: true,
+          },
         },
       });
       return {
