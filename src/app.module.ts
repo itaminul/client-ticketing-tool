@@ -4,9 +4,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppDataSource } from "./data-source";
 import { ClientsModule } from './clients/clients.module';
 import { ProjectsModule } from './projects/projects.module';
+import { CreateTicketsModule } from './create-tickets/create-tickets.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(AppDataSource), AuthModule, ClientsModule, ProjectsModule],
+  imports: [TypeOrmModule.forRoot(AppDataSource), AuthModule, ClientsModule, ProjectsModule, CreateTicketsModule],
   controllers: [],
   providers: [],
 })
