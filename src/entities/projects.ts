@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Client } from "./client";
+import { GenerateTicket } from "./generate-tickets";
 
 @Entity("projects")
 export class Projects {
@@ -35,4 +37,7 @@ export class Projects {
 
   @ManyToOne(() => Client, (clint) => clint.projects)
   client: Client;
+
+  @OneToMany(() => GenerateTicket, (generateTicket) => generateTicket.project)
+  generateTicket: GenerateTicket;
 }
