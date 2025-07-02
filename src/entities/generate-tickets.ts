@@ -10,6 +10,7 @@ import {
 import { Client } from "./client";
 import { TicketAttachments } from "./tickets-attachements";
 import { Projects } from "./projects";
+import { Employees } from "./employees";
 
 @Entity("generateTicket")
 export class GenerateTicket {
@@ -30,32 +31,27 @@ export class GenerateTicket {
   @Column({ nullable: true })
   remarks: string;
   @Column({ default: 1 })
-  org_id: number;
+  orgId: number;
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
   updatedAt: Date;
   @Column({ default: 1 })
   active_status: number;
-
   @ManyToOne(() => Client, (clint) => clint.projects)
   client: Client;
-
   @ManyToOne(() => Projects, (pro) => pro.generateTicket)
   project: Projects[];
-
   @ManyToOne(() => Client, (pro) => pro.generateTicket)
   clients: Client[];
-
   @Column({ nullable: true })
   ticketTypeId: number;
-
   @Column({ nullable: true })
   ticketAssigned: number;
-
   @Column({ nullable: true })
   ticketAssignedTo: number;
-
   @OneToMany(() => TicketAttachments, (tiAttach) => tiAttach.generateTicket)
   tiAttachments: TicketAttachments[];
+  @OneToMany(() => Employees, (emp) => emp.generateTicket)
+  employees: Employees[];
 }
