@@ -14,15 +14,15 @@ export class Employees {
   id: number;
   @Column()
   nameEN: string;
-  @Column()
+  @Column({ nullable: true })
   nameBan: string;
   @Column()
   fNameEN: string;
-  @Column()
+  @Column({ nullable: true })
   fNameBan: string;
   @Column()
   mNameEN: string;
-  @Column()
+  @Column({ nullable: true })
   mNameBan: string;
   @Column()
   mobileNo: string;
@@ -36,7 +36,7 @@ export class Employees {
   permanentAddress: string;
   @Column()
   contactNo: string;
-  @Column()
+  @Column({ nullable: true })
   phone: string;
   @Column()
   emailAddress: string;
@@ -44,8 +44,12 @@ export class Employees {
   orgId: number;
   @CreateDateColumn()
   createdAt: Date;
+  @Column({ nullable: true })
+  createdBy: number;
   @UpdateDateColumn()
   updatedAt: Date;
+  @Column({ nullable: true })
+  updatedBy: number;
   @Column({ default: 1 })
   active_status: number;
   @ManyToOne(() => GenerateTicket, (genTi) => genTi.employees)

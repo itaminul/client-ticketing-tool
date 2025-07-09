@@ -11,7 +11,7 @@ import {
     HttpStatus,
   } from '@nestjs/common';
   import { BaseService } from './base.service';
-  import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
   
 
   @Controller()

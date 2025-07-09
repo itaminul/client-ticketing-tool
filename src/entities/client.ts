@@ -15,13 +15,13 @@ export class Client {
   id: bigint;
   @Column()
   clientName: string;
-  @Column()
+  @Column({ nullable: true })
   clientDescripton: string;
   @Column()
   address: string;
   @Column()
   contactNo: string;
-  @Column()
+  @Column({ nullable: true })
   phone: string;
   @Column()
   emailAddress: string;
@@ -29,8 +29,12 @@ export class Client {
   org_id: number;
   @CreateDateColumn()
   createdAt: Date;
+  @Column({ nullable: true })
+  createdBy: number;
   @UpdateDateColumn()
   updatedAt: Date;
+  @Column({ nullable: true })
+  updatedBy: number;
   @Column({ default: 1 })
   active_status: number;
 

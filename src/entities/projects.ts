@@ -30,8 +30,12 @@ export class Projects {
   org_id: number;
   @CreateDateColumn()
   createdAt: Date;
+  @Column({ nullable: true })
+  createdBy: number;
   @UpdateDateColumn()
   updatedAt: Date;
+  @Column({ nullable: true })
+  updatedBy: number;
   @Column({ default: 1 })
   active_status: number;
 
