@@ -40,11 +40,15 @@ export class ProjectsController extends BaseController<Projects> {
 
   @Post()
   async create(@Body() projectDto: CreateProjectsDto): Promise<any> {
-    const data = await super.create(projectDto);
-    return {
-      status: HttpStatus.OK,
-      data: data,
-    };
+    try {
+      const data = await super.create(projectDto);
+      return {
+        status: HttpStatus.OK,
+        data: data,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Patch(":id")
