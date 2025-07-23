@@ -56,15 +56,19 @@ export class ProjectsController extends BaseController<Projects> {
     @Param("id") id: any,
     @Body() projectDto: UpdateProjectsDto
   ): Promise<any> {
-    const data = await super.update(id, projectDto);
+    try {
+      const data = await super.update(id, projectDto);
 
-    if (data && (data as any).status === HttpStatus.NOT_FOUND) {
-      return data;
+      if (data && (data as any).status === HttpStatus.NOT_FOUND) {
+        return data;
+      }
+
+      return {
+        status: HttpStatus.OK,
+        data: data,
+      };
+    } catch (error) {
+      throw error;
     }
-
-    return {
-      status: HttpStatus.OK,
-      data: data,
-    };
   }
 }

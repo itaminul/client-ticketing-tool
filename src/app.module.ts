@@ -5,9 +5,10 @@ import { AppDataSource } from "./data-source";
 import { ClientsModule } from './clients/clients.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CreateTicketsModule } from './create-tickets/create-tickets.module';
+import { GenerateTicketModule } from './generate-ticket/generate-ticket.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(AppDataSource), AuthModule, ClientsModule, ProjectsModule, CreateTicketsModule],
+  imports: [TypeOrmModule.forRoot(AppDataSource), AuthModule, ClientsModule, ProjectsModule, CreateTicketsModule, GenerateTicketModule],
   controllers: [],
   providers: [],
 })

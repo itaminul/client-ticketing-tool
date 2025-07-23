@@ -35,21 +35,13 @@ export class ProjectsService extends BaseService<Projects> {
   }
 
   async create(projectsDto: CreateProjectsDto) {
-    try {
-      return this.runInTransaction(async (manager) => {
-        const project = this.repository.create(projectsDto);
-        return manager.save(project);
-      });
-    } catch (error) {
-      throw error;
-    }
+    return this.runInTransaction(async (manager) => {
+      const project = this.repository.create(projectsDto);
+      return manager.save(project);
+    });
   }
 
   async updateProject(id: bigint, projectDto: UpdateProjectsDto) {
-    try {
-      return super.update(id, projectDto);
-    } catch (error) {
-      throw error;
-    }
+    return super.update(id, projectDto);
   }
 }
