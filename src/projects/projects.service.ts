@@ -1,19 +1,21 @@
 // src/projects/projects.service.ts
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Projects } from "../entities/projects";
 import { DataSource, Repository } from "typeorm";
 import { CreateProjectsDto, UpdateProjectsDto } from "./dto/projects.dto";
 import { BaseService } from "../common/base.service";
+import { Client } from "src/entities/client";
 
 @Injectable()
 export class ProjectsService extends BaseService<Projects> {
   constructor(
     @InjectRepository(Projects)
     private readonly projectRepository: Repository<Projects>,
-    protected readonly dataSource: DataSource
+    @InjectRepository(Client)
+    private readonly clientRepository: Repository<Client>
   ) {
-    super(projectRepository, dataSource);
+    super(projectRepository);
   }
 
   async getAll(page: number = 1, limit: number = 10) {
@@ -35,13 +37,33 @@ export class ProjectsService extends BaseService<Projects> {
   }
 
   async create(projectsDto: CreateProjectsDto) {
-    return this.runInTransaction(async (manager) => {
-      const project = this.repository.create(projectsDto);
-      return manager.save(project);
+    const client = await this.clientRepository.findOne({
+      where: { id: projectsDto.client_id },
     });
+    if (!client) {
+      throw new NotFoundException(`Client ID  not found`);
+    }
+
+    const projectData = {
+      ...projectsDto,
+      client,
+      client_id: client.id,
+    };
+    return super.create(projectData);
   }
 
-  async updateProject(id: bigint, projectDto: UpdateProjectsDto) {
-    return super.update(id, projectDto);
+  async update(id: bigint, projectDto: UpdateProjectsDto) {
+    const client = await this.clientRepository.findOne({
+      where: { id: projectDto.client_id },
+    });
+    if (!client) {
+      throw new NotFoundException(`Client ID  not found`);
+    }
+    const projectData = {
+      ...projectDto,
+      client,
+      client_id: client.id,
+    };
+    return super.update(id, projectData);
   }
 }

@@ -12,27 +12,27 @@ import {
 export abstract class BaseService<T> {
   constructor(
     protected readonly repository: Repository<T>,
-    protected readonly dataSource: DataSource
+    // protected readonly dataSource: DataSource
   ) {}
 
-  async runInTransaction<T>(
-    callback: (manager: EntityManager) => Promise<T>
-  ): Promise<T> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+//   async runInTransaction<T>(
+//     callback: (manager: EntityManager) => Promise<T>
+//   ): Promise<T> {
+//     const queryRunner = this.dataSource.createQueryRunner();
+//     await queryRunner.connect();
+//     await queryRunner.startTransaction();
 
-    try {
-      const result = await callback(queryRunner.manager);
-      await queryRunner.commitTransaction();
-      return result;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
+//     try {
+//       const result = await callback(queryRunner.manager);
+//       await queryRunner.commitTransaction();
+//       return result;
+//     } catch (error) {
+//       await queryRunner.rollbackTransaction();
+//       throw error;
+//     } finally {
+//       await queryRunner.release();
+//     }
+//   }
 
   async getAll(
     page: number = 1,

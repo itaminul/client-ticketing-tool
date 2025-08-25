@@ -1,83 +1,86 @@
 import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotAcceptableException,
   UnauthorizedException,
+  NotFoundException,
+  InternalServerErrorException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Users } from "../entities/users";
 import { Repository } from "typeorm";
-import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
-import { LoginDto } from "./dto/login.dto";
-import { RegisterDto } from "./dto/register.dto";
+import * as bcrypt from "bcrypt";
+import { CreateLoginDto } from "./dto/create-login.dto";
+import { JwtPayload } from "./jwt-payload.interface";
+import { Users } from "src/entities/users";
+
+
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Users)
-    private userRepository: Repository<Users>,
-    private jwtServiec: JwtService
+    private readonly userRepository: Repository<Users>,
+    private readonly jwtService: JwtService
   ) {}
 
-  async validateUser(username: string, pass: string) {
-    const user = await this.userRepository.findOne({
-      where: {
-        username: username,
-      },
-    //  relations: ["roles"],
-    });
-    if (user && bcrypt.compareSync(pass, user.password)) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
-  }
-
-  async register(registerDto: RegisterDto) {
+  /**
+   * Validates user credentials
+   * @param username 
+   * @param password 
+   * @returns user without password if valid
+   * @throws NotAcceptableException if user not found
+   * @throws UnauthorizedException if password is invalid
+   */
+  async validateUser(username: string, password: string): Promise<{
+    id: number; username: string 
+}> {
     try {
-      const existingUser = await this.userRepository.findOne({
-        where: {
-          username: registerDto.username,
-        },
+      const user = await this.userRepository.findOne({
+        where: { username },
+        select: ['id', 'username', 'password'] // Explicitly select needed fields
       });
-      if (existingUser) {
-        throw new ConflictException("User with this username already exists");
+
+      if (!user) {
+        throw new NotFoundException("User not found");
       }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+      const passwordValid = await bcrypt.compare(password, user.password);
+      
+      if (!passwordValid) {
+        throw new UnauthorizedException("Invalid credentials");
+      }
 
-      const userData = this.userRepository.create({
-        ...registerDto,
-        password: hashedPassword,
-      });
-      // Save the Resume userRepository
-      const savedUserData = await this.userRepository.save(userData);
-      return savedUserData;
+      // Omit password from returned user object
+      const { password: _, ...result } = user;
+      return result;
     } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: error.message,
-          code: error.code,
-          detail: error.default,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException("Error validating user");
     }
   }
 
-  async login(loginDto: LoginDto) {
+  /**
+   * Logs in a user and returns JWT token
+   * @param loginDto 
+   * @returns access token and user info
+   * @throws UnauthorizedException if login fails
+   */
+  async login(loginDto: CreateLoginDto): Promise<{ access_token: string; username: string }> {
     try {
-      const user = await this.validateUser(
-        loginDto.username,
-        loginDto.password
-      );
-      console.log("user", user);
-      const payload = { username: user.username };
-      const access_token = this.jwtServiec.sign(payload);
-      console.log("access toke", access_token);
+      // First validate the user
+      const user = await this.validateUser(loginDto.username, loginDto.password);
+      
+      // Then create JWT payload
+      const payload: JwtPayload = {
+        username: user.username,
+        sub: user.id,
+        id: 0
+      };
+
+      // Generate access token
+      const access_token = this.jwtService.sign(payload);
+      
       return {
         access_token,
         username: user.username,
@@ -91,15 +94,25 @@ export class AuthService {
     }
   }
 
-  async getAll(page: number = 1, limit: number = 10) {
-    const [result, total] = await this.userRepository.findAndCount({
-      take: limit,
-      skip: (page - 1) * limit,
-    });
+  /**
+   * Validates JWT payload
+   * @param payload 
+   * @returns user if valid
+   * @throws UnauthorizedException if invalid
+   */
+  async validateJwtPayload(payload: JwtPayload): Promise<Users> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { username: payload.username }
+      });
 
-    return {
-      result: result,
-      total,
-    };
+      if (!user) {
+        throw new UnauthorizedException("Invalid token");
+      }
+
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException("Invalid token");
+    }
   }
 }

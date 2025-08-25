@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,7 +29,7 @@ export class TicketAttachments {
   updatedAt: Date;
   @Column({ nullable: true })
   updatedBy: number;
-
   @ManyToOne(() => GenerateTicket, (geTicket) => geTicket.tiAttachments)
+  @JoinColumn({ name: "ticketId" })
   generateTicket: GenerateTicket;
 }
