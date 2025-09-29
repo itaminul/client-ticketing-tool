@@ -4,6 +4,7 @@ import {
   IsDateString,
   IsOptional,
   IsNotEmpty,
+  IsNumber,
 } from "class-validator";
 
 export class CreateLoginDto {
@@ -33,4 +34,8 @@ export class CreateLoginDto {
   @IsOptional()
   @IsEmail()
   email: string;
+  @IsOptional()
+  @IsNumber()
+  usergrp_id: number;
+  
 }

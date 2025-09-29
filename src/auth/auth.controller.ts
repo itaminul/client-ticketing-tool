@@ -6,6 +6,9 @@ import {
   Post,
   BadRequestException,
   Body,
+  Res,
+  HttpStatus,
+  HttpException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -14,13 +17,38 @@ import * as bcrypt from "bcrypt";
 import { JwtPayload } from "./jwt-payload.interface";
 import { use } from "passport";
 import { Users } from "src/entities/users";
+import { AuthService } from "./auth.service";
+import { CreateLoginDto } from "./dto/create-login.dto";
 @Controller("auth")
 export class AuthController {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly authService: AuthService
   ) {}
+
+  @Post("register")
+  async create(@Body() userDto: CreateLoginDto) {
+    try {
+      const results = await this.authService.createUser(userDto);
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: "Information Createded successfully",
+        data: results,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          "Failed to create",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+    }
+  }
 
   /**
    * Validates user credentials
@@ -86,21 +114,24 @@ export class AuthController {
    * @throws UnauthorizedException if login fails
    */
 
-  @Post("/login")
+  @Post("/loginnew")
   async login(@Body() body: { username: string; password: string }) {
     const { username, password } = body;
     try {
       const user = await this.validateUser(username, password);
+      console.log("user", user);
       // Generate access token
       const payload = {
         username: user.username,
-        sub: user.id,
-       // roleName: user.roleName,
+      //  sub: user.id,
+        // roleName: user.roleName,
       };
+      console.log("payload", payload)
       const access_token = this.jwtService.sign(payload);
+      console.log("access token", access_token)
       return {
         access_token,
-      //  role: user.roleName,
+          // role: user.roll_id,
       };
     } catch (error) {
       throw error;
